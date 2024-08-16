@@ -28,7 +28,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   void _startSmoothTimer() {
     _timer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
       if (_isResetting) return;
-
       setState(() {
         _value += 0.1; // Smaller increment for smoother transition
         o3dController.cameraTarget(0.20, 1.5, _value);
@@ -40,21 +39,22 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     });
   }
 
-  void _smoothReset() {
-    const double targetValue = -2;
-    const int durationMs = 1000; // 1 second for the smooth reset
-    final double difference = _value - targetValue;
-    const int steps = durationMs ~/ 50; // Number of steps for the reset
-    final double decrement = difference / steps;
-
+  void _smoothReset() async {
+    o3dController.cameraOrbit(0, 95, 1); // Assuming radius is fixed at 1.0
+    o3dController.cameraTarget(0.20, 1.5, -12);
+    await Future.delayed(const Duration(milliseconds: 700));
+    _value = -12;
     Timer.periodic(const Duration(milliseconds: 50), (timer) {
       setState(() {
-        _value -= decrement;
+        _value += 0.1; // Smaller increment for smoother transition
         o3dController.cameraTarget(0.20, 1.5, _value);
-        if (_value <= targetValue) {
-          _value = targetValue;
-          _isResetting = false;
+        if (_value > 2) {
           timer.cancel(); // Stop the reset timer
+          o3dController.cameraOrbit(
+              180, 95, 1); // Assuming radius is fixed at 1.0
+          o3dController.cameraTarget(0.20, 1.5, 2);
+          Future.delayed(
+              const Duration(milliseconds: 700), () => _isResetting = false);
         }
       });
     });
@@ -82,8 +82,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               cameraControls: false,
               animationName: animationName,
               cameraOrbit: CameraOrbit(180, 95, 0.5),
-              cameraTarget: CameraTarget(0.20, 1.5,  2),
-              // interactionPrompt: InteractionPrompt.none,
+              cameraTarget: CameraTarget(0.20, 1.5, 2),
+              interactionPrompt: InteractionPrompt.none,
               loading: Loading.eager,
             ),
             Column(
