@@ -40,10 +40,11 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   }
 
   void _smoothReset() async {
+    await Future.delayed(const Duration(milliseconds: 500));
     o3dController.cameraOrbit(0, 95, 1); // Assuming radius is fixed at 1.0
-    o3dController.cameraTarget(0.20, 1.5, -12);
+    o3dController.cameraTarget(0.20, 1.5, -11);
     await Future.delayed(const Duration(milliseconds: 700));
-    _value = -12;
+    _value = -11;
     Timer.periodic(const Duration(milliseconds: 50), (timer) {
       setState(() {
         _value += 0.1; // Smaller increment for smoother transition
@@ -69,7 +70,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xE3FFFFFF),
+      backgroundColor: const Color(0xE6FFFFFF),
       body: SafeArea(
         child: Stack(
           children: [
